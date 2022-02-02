@@ -6,6 +6,7 @@ def get_count_by_cadres():
         current_staff = cache.get("current_staff")
     else:
         current_staff = ZebraCurrentStaff.objects.only("person_firstname", "demographic_gender","cadre_name","county_name","ward_district_name","field_currentage","field_hire_year")
+        cache.set("current_staff",current_staff, timeout=360000)
         
     all_available_cadres = {}
     cadre_counter = 0
