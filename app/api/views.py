@@ -19,4 +19,9 @@ def test(request):
     
     
 def home(request):
-    return render(request,'dashboard/base.html')
+    all_current_staff = ZebraCurrentStaff.objects.all().count()
+    import pdb
+    context = {
+       "all_current_staff": all_current_staff, 
+    }
+    return render(request,'dashboard/dash_content.html', context)
