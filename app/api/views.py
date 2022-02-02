@@ -17,11 +17,13 @@ def test(request):
     pdb.set_trace()
     # master_data_frame = pd.DataFrame(list(current_staff.values()))
     
-    
+from .helper_methods.cadres import get_count_by_cadres
 def home(request):
     all_current_staff = ZebraCurrentStaff.objects.all().count()
-    import pdb
+    
+    cadre_table = get_count_by_cadres()
     context = {
-       "all_current_staff": all_current_staff, 
+       "all_current_staff": "{:,}".format(all_current_staff), 
+       "cadre_table" : cadre_table
     }
     return render(request,'dashboard/dash_content.html', context)
