@@ -19,13 +19,17 @@ def test(request):
     
 from .helper_methods.cadres import get_count_by_cadres,get_count_retiring
 from .helper_methods.users import get_user_accounts
+from .helper_methods.current_staff import get_curent_staff
 def home(request):
-    all_current_staff = ZebraCurrentStaff.objects.all().count()
+    
+    all_current_staff = get_curent_staff()
     cadre_table = get_count_by_cadres()
     retiring_this_year = get_count_retiring()
     user_accounts = get_user_accounts()
+    
+    
     context = {
-       "all_current_staff": "{:,}".format(all_current_staff), 
+       "all_current_staff": all_current_staff, 
        "cadre_table" : cadre_table,
        "retiring_this_year" : retiring_this_year,
        "user_accounts" : user_accounts

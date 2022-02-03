@@ -1,4 +1,5 @@
 from django.core.cache import cache
+from django.conf import settings
 
 from ..models import ZebraCurrentStaff,ZebraAllStaff
 def get_count_by_cadres():
@@ -12,7 +13,7 @@ def get_count_by_cadres():
         current_staff = cache.get("current_staff")
     else:
         current_staff = ZebraCurrentStaff.objects.only("person_firstname", "demographic_gender","cadre_name","county_name","ward_district_name","field_currentage","field_hire_year", "field_retirement_date")
-        cache.set("current_staff",current_staff, timeout=360000)
+        cache.set("current_staff",current_staff, timeout=settings.CACHE_TIME_OUT)
         
     all_available_cadres = {}
     cadre_counter = 0
@@ -27,7 +28,7 @@ from datetime import date
 def get_count_retiring():
     """Function that fetch count of all retiring staff
     Args:
-        facility(str): agent making queries to the api
+        org_unit(str): queries for each org_unit
     Returns:
         response(int): all schedules
     """
