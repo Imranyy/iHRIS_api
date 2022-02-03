@@ -18,13 +18,16 @@ def test(request):
     # master_data_frame = pd.DataFrame(list(current_staff.values()))
     
 from .helper_methods.cadres import get_count_by_cadres,get_count_retiring
+from .helper_methods.users import get_user_accounts
 def home(request):
-    # all_current_staff = ZebraCurrentStaff.objects.all().count()
-    
-    # cadre_table = get_count_by_cadres()
-    retiring_next_year = get_count_retiring()
+    all_current_staff = ZebraCurrentStaff.objects.all().count()
+    cadre_table = get_count_by_cadres()
+    retiring_this_year = get_count_retiring()
+    user_accounts = get_user_accounts()
     context = {
-    #    "all_current_staff": "{:,}".format(all_current_staff), 
-    #    "cadre_table" : cadre_table
+       "all_current_staff": "{:,}".format(all_current_staff), 
+       "cadre_table" : cadre_table,
+       "retiring_this_year" : retiring_this_year,
+       "user_accounts" : user_accounts
     }
     return render(request,'dashboard/dash_content.html', context)

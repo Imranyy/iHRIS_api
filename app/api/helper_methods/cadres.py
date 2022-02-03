@@ -2,6 +2,12 @@ from django.core.cache import cache
 
 from ..models import ZebraCurrentStaff,ZebraAllStaff
 def get_count_by_cadres():
+    """Function that gets cadres count
+    Args:
+        county(str): ...
+    Returns:
+        response(dict): all cadres count
+    """
     if "current_staff" in cache:
         current_staff = cache.get("current_staff")
     else:
@@ -19,19 +25,24 @@ def get_count_by_cadres():
 
 from datetime import date
 def get_count_retiring():
+    """Function that fetch count of all retiring staff
+    Args:
+        facility(str): agent making queries to the api
+    Returns:
+        response(int): all schedules
+    """
     todays_date = date.today()
     current_year = todays_date.year
     retiring_staff_count = []
     current_staff = ZebraCurrentStaff.objects.only("field_retirement_date")
     for staff in current_staff:
-        # print(datetime.datetime.now())
         if staff.field_retirement_date is not None:
             retirement_date = staff.field_retirement_date
             retiriment_year = retirement_date.strftime('%Y')
         
-            if retiriment_year == current_year:
+            if retiriment_year == str(current_year):
                 retiring_staff_count.append(retiriment_year)
-    retirement_count = len(retiring_staff_count)            
-    import pdb
-    pdb.set_trace()
-    pass
+    retirement_count = len(retiring_staff_count)        
+    retirement_count = "{:,}".format(retirement_count)    
+    
+    return retirement_count
