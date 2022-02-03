@@ -35,7 +35,11 @@ def get_count_retiring():
     todays_date = date.today()
     current_year = todays_date.year
     retiring_staff_count = []
-    current_staff = ZebraCurrentStaff.objects.only("field_retirement_date")
+    if "current_staff" in cache:
+        current_staff = cache.get("current_staff")
+    else:
+        current_staff = ZebraCurrentStaff.objects.only("person_firstname", "demographic_gender","cadre_name","county_name","ward_district_name","field_currentage","field_hire_year", "field_retirement_date")
+        cache.set("current_staff",current_staff, timeout=settings.CACHE_TIME_OUT)
     for staff in current_staff:
         if staff.field_retirement_date is not None:
             retirement_date = staff.field_retirement_date
