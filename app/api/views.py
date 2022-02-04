@@ -7,6 +7,14 @@ from django.core.cache import cache
 from .models import ZebraCurrentStaff, ZebraUsers
 import pandas as pd
 
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.conf import settings
+
+from .serializers import CurrentStaffSerializer, UserAccountsSerializer
+
+
 def test(request):
     current_staff = ZebraCurrentStaff.objects.only("person_firstname", "demographic_gender","cadre_name","county_name","ward_district_name","field_currentage","field_hire_year", "field_retirement_date")
     records = current_staff.to
@@ -39,12 +47,7 @@ def home(request):
     return render(request,'dashboard/dash_content.html', context)
  
  
-from rest_framework.permissions import AllowAny
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.conf import settings
 
-from .serializers import CurrentStaffSerializer, UserAccounts
 @api_view(['GET'])
 def all_current_staff(request):
    if request.method == 'GET':
@@ -67,6 +70,6 @@ def user_account(request):
          all_user_account = ZebraUsers.objects.all()
          cache.set("all_user_accounts",all_user_account,timeout=settings.CACHE_TIME_OUT)
 
-      serializer = CurrentStaffSerializer(all_user_account, many=True)
+      serializer = UserAccountsSerializer(all_user_account, many=True)
         
    return Response(serializer.data)
