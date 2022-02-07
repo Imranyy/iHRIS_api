@@ -15,22 +15,21 @@ def get_curent_staff():
     all_current_staff = "{:,}".format(all_current_staff)
     print("------------------>>>> get_curent_staff")
     return all_current_staff
-from datetime import date
+from datetime import date, datetime
+
 def get_registered_staff():
+    import pdb
     if "registered_staff" in cache:
         registered_staff = cache.get("registered_staff")
     else:
-        registered_staff = ZebraStaffRegistered.objects.all()
-        # only("person_firstname","person_nationality","demographic_gender","registration_council","facility_location")
+        registered_staff = ZebraStaffRegistered.objects.only("person_firstname","person_nationality","demographic_gender","registration_council","facility_location")
         cache.set("registered_staff",registered_staff, timeout=settings.CACHE_TIME_OUT)
+    # pdb.set_trace()
     todays_date = date.today()
     current_year = todays_date.year
     currently_registered = []
     for staff in registered_staff:
-        import pdb
-        print("==========>>>>>>>>>>>>>>>>>>>",int(staff.registration_license_expiration.strftime('%Y')))
-        if int(staff.registration_license_expiration.strftime('%Y')) >= int(current_year):
-            print("----------- ############", staff.registration_license_expiration)
+        if not isinstance(staff.registration_license_expiration, str) and int(staff.registration_license_expiration.strftime('%Y')) >= int(current_year):
             currently_registered.append(staff.registration_license_expiration.strftime('%Y'))
             
     count_currently_registered = len(currently_registered)

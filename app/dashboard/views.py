@@ -32,7 +32,7 @@ def home(request):
     
     all_current_staff = get_curent_staff()
     cadre_table = get_count_by_cadres()
-    # retiring_this_year = get_count_retiring()
+    retiring_this_year = get_count_retiring()
     user_accounts = get_user_accounts()
     registered_staff = get_registered_staff()
     
@@ -40,7 +40,7 @@ def home(request):
     context = {
        "all_current_staff": all_current_staff, 
        "cadre_table" : cadre_table,
-    #    "retiring_this_year" : retiring_this_year,
+       "retiring_this_year" : retiring_this_year,
        "user_accounts" : user_accounts,
        "registered_staff":registered_staff
     }
