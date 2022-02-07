@@ -73,3 +73,16 @@ def user_account(request):
       serializer = UserAccountsSerializer(all_user_account, many=True)
         
    return Response(serializer.data)
+
+@api_view(['GET'])
+def facilities(request):
+   if request.method == 'GET':
+      if "facilities" in cache:
+         all_user_account = cache.get("facilities")
+      else:
+         all_user_account = ZebraUsers.objects.all()
+         cache.set("facilities",all_user_account,timeout=settings.CACHE_TIME_OUT)
+
+      serializer = UserAccountsSerializer(all_user_account, many=True)
+        
+   return Response(serializer.data)
