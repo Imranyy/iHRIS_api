@@ -1,37 +1,63 @@
 from django.shortcuts import render
-from django.http import JsonResponse
-from django.core import serializers
 
 from django.core.cache import cache
 
-from .models import ZebraCurrentStaff
-import pandas as pd
+from rest_framework import status
+from rest_framework.response import Response
 
-def test(request):
-    current_staff = ZebraCurrentStaff.objects.only("person_firstname", "demographic_gender","cadre_name","county_name","ward_district_name","field_currentage","field_hire_year", "field_retirement_date")
-    records = current_staff.to
-    # print(current_staff)
-    master_data_frame = pd.DataFrame.from_records(list(current_staff))
-    # print(master_data_frame[:5])
-    import pdb
-    pdb.set_trace()
-    # master_data_frame = pd.DataFrame(list(current_staff.values()))
-    
-from .helper_methods.cadres import get_count_by_cadres,get_count_retiring
-from .helper_methods.users import get_user_accounts
-from .helper_methods.current_staff import get_curent_staff
-def home(request):
-    
-    all_current_staff = get_curent_staff()
-    cadre_table = get_count_by_cadres()
-    retiring_this_year = get_count_retiring()
-    user_accounts = get_user_accounts()
-    
-    
-    context = {
-       "all_current_staff": all_current_staff, 
-       "cadre_table" : cadre_table,
-       "retiring_this_year" : retiring_this_year,
-       "user_accounts" : user_accounts
-    }
-    return render(request,'dashboard/dash_content.html', context)
+from rest_framework.decorators import api_view
+from django.conf import settings
+
+from ..dashboard.models import ZebraAllStaff,ZebraCurrentStaff,ZebraUsers
+from ..dashboard.serializers import CurrentStaffSerializer, UserAccountsSerializer
+
+
+
+@api_view(['GET'])
+def clear_cache(request):
+   if request.method == 'GET':
+       cache.clear()
+       return_message = {
+            "message": ('All Caches cleared Successfully')
+        }
+       return Response(return_message, status=status.HTTP_200_OK)
+   
+   
+@api_view(['GET'])
+def all_current_staff(request):
+   if request.method == 'GET':
+      if "current_staff" in cache:
+         current_staff = cache.get("current_staff")      
+      else:
+         current_staff = ZebraCurrentStaff.objects.all()
+         cache.set("CurrentStaffSerializer",current_staff, timeout=settings.CACHE_TIME_OUT)
+
+      serializer = CurrentStaffSerializer(current_staff, many=True)
+        
+   return Response(serializer.data)
+
+@api_view(['GET'])
+def user_account(request):
+   if request.method == 'GET':
+      if "all_user_accounts" in cache:
+         all_user_account = cache.get("all_user_accounts")
+      else:
+         all_user_account = ZebraUsers.objects.all()
+         cache.set("all_user_accounts",all_user_account,timeout=settings.CACHE_TIME_OUT)
+
+      serializer = UserAccountsSerializer(all_user_account, many=True)
+        
+   return Response(serializer.data)
+
+@api_view(['GET'])
+def facilities(request):
+   if request.method == 'GET':
+      if "facilities" in cache:
+         all_user_account = cache.get("facilities")
+      else:
+         all_user_account = ZebraUsers.objects.all()
+         cache.set("facilities",all_user_account,timeout=settings.CACHE_TIME_OUT)
+
+      serializer = UserAccountsSerializer(all_user_account, many=True)
+        
+   return Response(serializer.data)
